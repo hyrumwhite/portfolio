@@ -1,44 +1,26 @@
 import { serve } from "https://deno.land/std@0.140.0/http/server.ts";
+import { normalize, extname } from "https://deno.land/std/path/mod.ts";
+import { extensionContentTypeMap } from "./ExtensionContentTypeMap.ts";
 
 async function handleRequest(request: Request): Promise<Response> {
 	const { pathname } = new URL(request.url);
-
-	// This is how the server works:
-	// 1. A request comes in for a specific asset.
-	// 2. We read the asset from the file system.
-	// 3. We send the asset back to the client.
-
-	// Check if the request is for style.css.
-	if (pathname.startsWith("/style.css")) {
-		// Read the style.css file from the file system.
-		const file = await Deno.readFile("./style.css");
-		// Respond to the request with the style.css file.
+	let filePath = `./public${normalize(pathname)}`;
+	if (filePath === "./public/") {
+		filePath += "index.html";
+	}
+	const extension = extname(filePath);
+	try {
+		const file = await Deno.readFile(filePath);
 		return new Response(file, {
 			headers: {
-				"content-type": "text/css",
+				"content-type": extensionContentTypeMap[extension] || "text/plain",
 			},
 		});
-	}
-
-	return new Response(
-		`<html>
-      <head>
-				<meta charset="UTF-8" />
-				<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-				<title>sethwhite.dev</title>
-        <link rel="stylesheet" href="style.css" />
-      </head>
-      <body>
-        <h1>sethwhite.dev</h1>
-      </body>
-    </html>`,
-		{
-			headers: {
-				"content-type": "text/html; charset=utf-8",
-			},
+	} catch (e) {
+		if (extension.length === 0) {
 		}
-	);
+		return new Response("File not found", { status: 404 });
+	}
 }
 
-serve(handleRequest);
+serve(handleRequest, { port: 3443 });
