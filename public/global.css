@@ -61,9 +61,16 @@ main {
 	margin: -32px;
 }
 @media screen and (max-width: 480px) {
+	.text-body {
+		display: flex;
+		flex-direction: column;
+	}
 	.author {
 		float: unset;
 		margin:0px;
+		align-self: center;
+		margin-top: -1rem;
+		margin-bottom: -1rem;
 	}
 }
 
