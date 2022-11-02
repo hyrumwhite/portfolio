@@ -1,6 +1,4 @@
-export const getStream = () => {
-	let file: Deno.FsFile;
-	let didRead: number | null = null;
+export const getStream = async () => {
 	let fileIndex = 0;
 
 	const files = [
@@ -9,21 +7,24 @@ export const getStream = () => {
 		"./public/end.html",
 	];
 
+	const promises = [];
+	for (const file of files) {
+		promises.push(Deno.open(file, { read: true }));
+	}
+	const fileHandles = await Promise.all(promises);
+
 	return new ReadableStream({
 		async pull(controller) {
-			const buffer = new Uint8Array(10);
-			const filePath = files[fileIndex];
-			if (didRead === null && filePath) {
-				file = await Deno.open(filePath, { read: true });
-			}
-			didRead = await file.read(buffer);
+			const buffer = new Uint8Array(64 * 1024);
+			const file = fileHandles[fileIndex];
+			const didRead = await file.read(buffer);
 			if (didRead !== null) {
 				controller.enqueue(buffer);
 			} else {
 				file.close();
 				fileIndex += 1;
 			}
-			if (!filePath) {
+			if (!file) {
 				controller.close();
 			}
 		},
