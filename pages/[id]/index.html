@@ -1,0 +1,8 @@
+<main>
+	this is the id page. Id is: <span id="id"/>
+</main>
+
+<script>
+	let [id] = window.location.pathname.split('/');
+	document.querySelector('#id')?.textContent = id;
+</script>

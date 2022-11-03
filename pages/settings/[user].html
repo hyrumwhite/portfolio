@@ -1,0 +1,7 @@
+<main>
+	this is the user <span id="id"/>
+	<script>
+		const [,userId] = location.pathname.split('/');
+		document.querySelector('#id')?.textContent = userId;
+	</script>
+</main>
