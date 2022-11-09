@@ -29,9 +29,4 @@ const parsePaths = (paths: string[]): RegExp[] => {
 };
 
 const paths = await getPaths();
-const matchers = parsePaths(paths);
-console.log(matchers);
-
-// let matches = "pages\\games.html".matchAll(matchers[0]);
-let matches = "pages\\settings\\123.html".matchAll(matchers[3]);
-console.log(Array.from(matches));
+export const matchers = parsePaths(paths);
