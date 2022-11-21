@@ -57,7 +57,6 @@ export const createElement = (tag, props) => {
     } else if (prop === "style" && typeof value == "object") {
       Object.assign(element.style, value);
     } else if (prop === "children") {
-      console.log(element, value);
       addChildrenToElement(element, value);
     } else if (prop === "shadowChildren") {
       let shadowRoot = element.attachShadow({

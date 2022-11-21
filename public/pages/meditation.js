@@ -1,5 +1,5 @@
 import vvv, { createElement } from "../vvv-native/CreateElement.js";
-
+import { Flower } from "./meditationFlower.js";
 const { div, svg_, circle_ } = vvv;
 
 // /**
@@ -22,7 +22,19 @@ const Circle = ({ radius, fill, class: className }) =>
     ],
   });
 
-const SunGroup = ({ radius }) => {
+const SunGroup = ({ radius, maxRadius }) => {
+  if (typeof radius === "string" && radius.endsWith("%")) {
+    const percent = parseInt(radius) * 0.01;
+    radius = Math.floor(window.innerWidth * percent);
+    if (radius % 2) {
+      //keep it even for easy division
+      radius += 1;
+    }
+    //don't let the sun get massive
+    if (radius > maxRadius) {
+      radius = maxRadius;
+    }
+  }
   return div({
     class: "sun-group",
     style: {
@@ -39,4 +51,14 @@ const SunGroup = ({ radius }) => {
   });
 };
 
-createElement(document.body, [SunGroup({ radius: 200 })]);
+createElement(document.body, [
+  SunGroup({ radius: "40%", maxRadius: 200 }),
+  div({
+    class: "flower-group",
+    children: [
+      Flower({ class: "flower" }),
+      Flower({ class: "flower" }),
+      Flower({ class: "flower" }),
+    ],
+  }),
+]);
