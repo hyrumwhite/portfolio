@@ -1,5 +1,5 @@
 import vvv, { createElement } from "../vvv-native/CreateElement.js";
-import { Flower } from "./meditationFlower.js";
+import { Flower } from "./MeditationFlower.js";
 const { div, svg_, circle_ } = vvv;
 
 // /**
