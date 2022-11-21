@@ -130,7 +130,7 @@ const playButton = overlay["$button"];
 
 let paused = true;
 const pause = ($event) => {
-  if ($event.code === "Space") {
+  if ($event.code === "Space" || $event instanceof MouseEvent) {
     paused = !paused;
     if (paused) {
       middleSunControl.pause();
@@ -150,14 +150,4 @@ const pause = ($event) => {
   }
 };
 document.addEventListener("keydown", pause);
-
-createElement(playButton.$el, {
-  click() {
-    middleSunControl.play();
-    bottomSunControl.play();
-    flowerOneControls.play();
-    flowerTwoControls.play();
-    flowerThreeControls.play();
-    overlay.$el.remove();
-  },
-});
+document.addEventListener("click", pause);
