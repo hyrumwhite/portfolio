@@ -1,6 +1,7 @@
-import vvv, { createElement, getElement } from "../vvv-native/index.js";
+import vvv, { createElement } from "../vvv-native/CreateElement.js";
+import { getElement } from "../vvv-native/GetElement.js";
 import { Flower } from "./MeditationFlower.js";
-const { div, svg_, circle_ } = vvv;
+const { div, p, svg_, circle_ } = vvv;
 
 // /**
 //  * @param {number} radius
@@ -63,6 +64,11 @@ const flowerGroup = getElement(
   })
 );
 
+// const breatheIn = p("Breathe in");
+// const holdIn = p("Hold");
+// const breatheOut = p("Breathe out");
+// const holdOut = p("Hold");
+// const instructions = [breatheIn, holdIn, breatheOut, holdOut];
 createElement(document.body, [sunGroup.$el, flowerGroup.$el]);
 
 const { ["$.sun.middle"]: middleSun, ["$.sun.bottom"]: bottomSun } = sunGroup;
@@ -85,14 +91,20 @@ const sunTiming = {
   easing: "linear",
 };
 
-const middleSunControl = middleSun.$el.animate(
-  createSunAnimation(1.25),
-  sunTiming
-);
-const bottomSunControl = bottomSun.$el.animate(
-  createSunAnimation(1.5),
-  sunTiming
-);
+const controls = [];
+
+// const createInstructionAnimation = (values = []) =>
+//   values.map((opacity) => ({ opacity }));
+
+// controls.push(
+//   breatheIn.animate(createInstructionAnimation([1, 0, 0, 0, 0]), sunTiming),
+//   holdIn.animate(createInstructionAnimation([0, 1, 1, 0, 0]), sunTiming),
+//   breatheOut.animate(createInstructionAnimation([0, 0, 1, 0, 0]), sunTiming),
+//   holdOut.animate(createInstructionAnimation([0, 0, 0, 1, 1]), sunTiming)
+// );
+
+controls.push(middleSun.$el.animate(createSunAnimation(1.25), sunTiming));
+controls.push(bottomSun.$el.animate(createSunAnimation(1.5), sunTiming));
 
 const {
   ["$.flower.one"]: flowerOne,
@@ -101,50 +113,29 @@ const {
 } = flowerGroup;
 // console.log(flowerOne.$el);
 const createFlowerAnimation = (deg) => [
-  { transform: `rotate(0deg)` },
-  { transform: `rotate(${deg}deg)` },
-  { transform: `rotate(0deg)` },
-  { transform: `rotate(${deg * -1}deg)` },
-  { transform: `rotate(0deg)` },
+  { transform: `rotate(0deg) translateY(0px)` },
+  { transform: `rotate(${deg}deg) translateY(${deg}px)` },
+  { transform: `rotate(0deg) translateY(0px)` },
+  { transform: `rotate(${deg * -1}deg) translateY(${deg * -1}px)` },
+  { transform: `rotate(0deg) translateY(0px)` },
 ];
-const flowerOneControls = flowerOne.$el.animate(
-  createFlowerAnimation(-5),
-  sunTiming
-);
-const flowerTwoControls = flowerTwo.$el.animate(
-  createFlowerAnimation(4),
-  sunTiming
-);
-const flowerThreeControls = flowerThree.$el.animate(
-  createFlowerAnimation(7),
-  sunTiming
-);
-middleSunControl.pause();
-bottomSunControl.pause();
-flowerOneControls.pause();
-flowerTwoControls.pause();
-flowerThreeControls.pause();
+controls.push(flowerOne.$el.animate(createFlowerAnimation(-5), sunTiming));
+controls.push(flowerTwo.$el.animate(createFlowerAnimation(2), sunTiming));
+controls.push(flowerThree.$el.animate(createFlowerAnimation(7), sunTiming));
+
+controls.forEach((ctrl) => ctrl.pause());
 
 const overlay = getElement(".overlay");
-const playButton = overlay["$button"];
 
 let paused = true;
 const pause = ($event) => {
   if ($event.code === "Space" || $event instanceof MouseEvent) {
     paused = !paused;
     if (paused) {
-      middleSunControl.pause();
-      bottomSunControl.pause();
-      flowerOneControls.pause();
-      flowerTwoControls.pause();
-      flowerThreeControls.pause();
+      controls.forEach((ctrl) => ctrl.cancel());
       document.body.appendChild(overlay.$el);
     } else {
-      middleSunControl.play();
-      bottomSunControl.play();
-      flowerOneControls.play();
-      flowerTwoControls.play();
-      flowerThreeControls.play();
+      controls.forEach((ctrl) => ctrl.play());
       overlay.$el.remove();
     }
   }
